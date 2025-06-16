@@ -65,12 +65,12 @@
             :rules="formRules"
           >
             <el-form-item label="姓名:" prop="name">
-              <el-input v-model="formModel.name" placeholder="Please input" />
+              <el-input v-model="formModel.name" placeholder="请输入姓名" />
             </el-form-item>
             <el-form-item label="手机号" prop="phone">
               <el-input
                 v-model="formModel.phone"
-                placeholder="Please input"
+                placeholder="请输入手机号"
                 class="input-with-select"
                 style="width: 73%"
               >
@@ -87,7 +87,7 @@
             <el-form-item label="验证码" prop="code">
               <el-input
                 v-model="formModel.code"
-                placeholder="Please input"
+                placeholder="请输入验证码"
                 class="input-with-select"
                 style="width: 100%"
               >
@@ -146,7 +146,15 @@ const formModel = ref({
 const formRules = computed(() => {
   return {
     name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-    phone: [{ required: true, message: "请输入手机号", trigger: "blur" }],
+    phone: [{ required: true, message: "请输入手机号", validator: (rule: any, value: any, callback: any) => {
+      if (!value) {
+        callback(new Error("请输入手机号"));
+      }else if(!/^1[3-9]\d{9}$/.test(value)){
+        callback(new Error("请输入正确的手机号"));
+      } else {
+        callback();
+      }
+    }, trigger: "blur" }],
     code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
   };
 });

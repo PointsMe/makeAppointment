@@ -20,7 +20,7 @@
             <el-form-item label="门店" prop="storeName">
               <el-select
                 v-model="formModel.storeName"
-                placeholder="Select"
+                placeholder="请选择门店"
                 @change="changeStore"
               >
                 <el-option
@@ -38,7 +38,7 @@
                 style="width: 100%"
                 type="date"
                  :editable="false"
-                placeholder="Pick a day"
+                placeholder="请选择日期"
               />
             </el-form-item>
             <el-form-item label="" prop="time">
@@ -48,7 +48,7 @@
                 step="00:15"
                 end="18:30"
                   :editable="false"
-                placeholder="Select time"
+                placeholder="请选择时间"
               />
             </el-form-item>
           </el-form>
@@ -73,6 +73,7 @@
                     style="width: 100%"
                     v-model="item.model[iv.value]"
                     :options="iv.optionsData"
+                    placeholder="请选择服务"
                     @change="(e:any)=>changeServer(e,item.id, iv.id)"
                   />
                   <el-icon
@@ -92,7 +93,7 @@
                   :defaultValue="''"
                   v-else
                   v-model="item.model[iv.value]"
-                  placeholder="Select"
+                  :placeholder="`请选择${iv.label}`"
                   @change="(e:any)=>changeType(e,item.id, iv.value,item)"
                 >
                   <el-option
@@ -552,9 +553,12 @@ onActivated(() => {
 });
 onMounted(() => {
   const merchantId = router.currentRoute.value?.query?.merchantId as string;
+  const shopId = router.currentRoute.value?.query?.shopId as string;
   console.log("onMounted====>", router.currentRoute.value?.query);
-  if (merchantId) {
+  if (merchantId && shopId) {
     commonStore.setMerchantIdFn(merchantId);
+    commonStore.setShopIdFn(shopId);
+    formModel.value.storeName = shopId;
     getData();
   }
 });

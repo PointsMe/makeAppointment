@@ -40,14 +40,14 @@
                 v-model="formModal.date"
                 type="date"
                  :editable="false"
-                placeholder="Pick a day"
+                placeholder="请选择生日"
               />
             </el-form-item>
             <el-form-item label="邮箱:" prop="email">
-              <el-input v-model="formModal.email" placeholder="Please input" />
+              <el-input v-model="formModal.email" placeholder="请输入邮箱" />
             </el-form-item>
             <el-form-item label="地址:" prop="address">
-              <el-input v-model="formModal.address" placeholder="Please input" />
+              <el-input v-model="formModal.address" placeholder="请输入地址" />
             </el-form-item>
           </el-form>
 
