@@ -12,9 +12,6 @@ const router = createRouter({
   }
 })
 router.beforeEach((to, from, next) => {
-  getVersion().then((res:any)=>{
-    console.log("==getVersion==>",res);
-    next()
-  })
+  next()
 })
 export default router
