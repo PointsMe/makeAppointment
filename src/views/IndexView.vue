@@ -550,11 +550,13 @@ onMounted(() => {
   const merchantId = router.currentRoute.value?.query?.merchantId as string;
   const shopId = router.currentRoute.value?.query?.shopId as string;
   console.log("onMounted====>", router.currentRoute.value?.query);
+  console.log("onMounted====>");
   if (merchantId && shopId) {
     commonStore.setMerchantIdFn(merchantId);
     commonStore.setShopIdFn(shopId);
     formModel.value.storeName = shopId;
     getData();
+    getCategoryList();
   }
 });
 </script>

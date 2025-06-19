@@ -3,6 +3,7 @@ import { getLanguage, getMerchantId, getShopId } from "@/utils/cache/cookies"
 import axios from "axios"
 import { get, merge } from "lodash-es"
 import { ElMessage } from 'element-plus'
+import { getTimeZone } from "@/utils"
 
 /** 创建请求实例 */
 function createInstance() {
@@ -100,6 +101,7 @@ function createRequest(instance: AxiosInstance) {
     const language = getLanguage()
     const shopId = getShopId()
     const merchantId = getMerchantId()
+    const timeZone = getTimeZone()
     // 默认配置
     const defaultConfig: AxiosRequestConfig = {
       // 接口地址
@@ -109,7 +111,8 @@ function createRequest(instance: AxiosInstance) {
         "X-Merchant-Id": merchantId,
         "X-Shop-Id":  shopId,
         "accept-language": language,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-TimeZone": timeZone
       },
       // 请求体
       data: {},

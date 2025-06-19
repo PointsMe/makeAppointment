@@ -560,6 +560,7 @@ onMounted(() => {
     commonStore.setShopIdFn(shopId);
     formModel.value.storeName = shopId;
     getData();
+    getCategoryList();
   }
 });
 </script>

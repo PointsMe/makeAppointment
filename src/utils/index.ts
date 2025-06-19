@@ -30,3 +30,10 @@ export const isMobile = () =>{
   const getArr = Agents.filter(i => userAgentInfo?.includes(i));
   return getArr.length > 0 ? true : false;
 }
+export const getTimeZone = () => {
+  const offsetMinutes = new Date().getTimezoneOffset();
+  const offsetHours = Math.abs(offsetMinutes / 60);
+  const offsetSign = offsetMinutes > 0 ? '-' : '+';
+  const timeZone = `GMT${offsetSign}${offsetHours < 10 ? '0' : ''}${offsetHours}:00`;
+  return timeZone;
+}
