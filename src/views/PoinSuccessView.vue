@@ -164,6 +164,7 @@ onMounted(() => {
         display: flex;
         align-items: center;
         justify-items: left;
+        font-size: 16px;
       }
     }
     .add-server-select {

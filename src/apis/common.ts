@@ -88,3 +88,13 @@ export function getVerificationCodeApi(data: Types.verificationCodeType) {
     data: data
   })
 }
+/**
+ * 
+ * @returns 创建预约
+ */
+export function getSettingDetailApi() {
+  return request<any>({
+    url: "/reservation/setting/detailNoToken",
+    method: "post",
+  })
+}

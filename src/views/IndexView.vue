@@ -31,6 +31,14 @@
                 type="date"
                 @change="changeDate"
                 placeholder="请选择日期"
+                :disabled-date="(date: any) => {
+                  const today = new Date();
+                  today.setHours(0,0,0,0);
+                  const maxDate = new Date();
+                  maxDate.setHours(0,0,0,0);
+                  maxDate.setDate(today.getDate() + maxReservableDays);
+                  return date < today || date > maxDate;
+                }"
               />
             </el-form-item>
             <el-form-item label="" prop="time">
@@ -126,7 +134,8 @@ import {
   getShopListApi,
   getCategoryListApi,
   getProductListApi,
-  getWaiterListApi
+  getWaiterListApi,
+  getSettingDetailApi
 } from '@/apis/common'
 import { getRandomString } from '@/utils/index'
 import { CirclePlus, Delete } from '@element-plus/icons-vue'
@@ -181,6 +190,7 @@ const categoryList = ref<any>([])
 const productList = ref<any>([])
 const waiterList = ref<any>([])
 const router = useRouter()
+const maxReservableDays = ref(0)
 const formModel = ref({
   storeName: '',
   date: '',
@@ -331,6 +341,11 @@ const changeServer = (e: any, id: any, id2: any) => {
 
     console.log('formList.value===>', formList.value)
   })
+}
+const getSettingDetail = async () => {
+  const { data } = await getSettingDetailApi()
+  console.log('getSettingDetail===>', data)
+  maxReservableDays.value = data.maxReservableDays || 0
 }
 const submit = () => {
   formRef.value.validate((valid: any) => {
@@ -501,7 +516,7 @@ const changeType = (e: any, id: any, type: any, item: any) => {
 const changeStore = (e: string) => {
   // formList.value = cloneDeep(defaultFormList);
   commonStore.setShopIdFn(e)
-  Promise.all([getCategoryList(), getProductList()]).then((res) => {
+  Promise.all([getCategoryList(), getProductList(),getSettingDetail()]).then((res) => {
     console.log(res)
     formList.value = cloneDeep(defaultFormList).map((item: any) => {
       item.itemList = item.itemList.map((iv: any) => {
@@ -595,6 +610,7 @@ onMounted(() => {
     getData()
     getCategoryList()
     getProductList()
+    getSettingDetail()
   }
 })
 </script>
