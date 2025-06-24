@@ -68,6 +68,7 @@
                 placeholder="请输入手机号"
                 class="input-with-select"
                 style="width: 77%"
+                type="number"
               >
                 <template #prepend>
                   <AllCountryView @changeCountry="changeCountry" />
@@ -84,6 +85,7 @@
                 v-model="formModel.code"
                 placeholder="请输入验证码"
                 class="input-with-select"
+                type="number"
                 style="width: 100%"
               >
               </el-input>
@@ -150,7 +152,7 @@ const formRules = computed(() => {
         callback();
       }
     }, trigger: "blur" }],
-    code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
+    code: [{ required: true, min: 4, max: 6, message: "请输入4-6位验证码", trigger: "blur" }],
   };
 });
 const sendCode = () => {
@@ -162,6 +164,9 @@ const sendCode = () => {
   }
   if(!formModel.value.phone){
     return ElMessage.error("请先输入手机号码！！");
+  }
+  if(!/^1[3-9]\d{9}$/.test(formModel.value.phone)){
+    return ElMessage.error("请先输入正确的手机号码！！");
   }
   verifyRef.value && verifyRef.value.show();
 };
@@ -192,7 +197,7 @@ const submit = () => {
         word: {
           ...commonStore.pageOneParams.word,
           name:formModel.value.name,
-          phone:formModel.value.phone,
+          phone: `${countryCode.value.replace("+", "")}-${formModel.value.phone}`,
           newCustomered: res.data.newCustomered,
           newCustomeredId: res.data.id, 
         },
@@ -201,6 +206,9 @@ const submit = () => {
         }
       })
         router.push("/poinSuccess");
+      }else{
+        loading.close()
+        ElMessage.error(res.message)
       }
   
     } else {
@@ -290,6 +298,7 @@ onMounted(() => {
         display: flex;
         align-items: center;
         justify-items: left;
+        font-size: 16px;
       }
     }
     .add-server-select {
@@ -312,7 +321,7 @@ onMounted(() => {
       }
     }
     :deep(.el-form-item) {
-      margin-bottom: 10px !important;
+      // margin-bottom: 10px !important;
     }
     :deep(.el-form-item--label-top .el-form-item__label) {
       margin-bottom: 0px !important;

@@ -73,6 +73,7 @@
                 placeholder="请输入手机号"
                 class="input-with-select"
                 style="width: 73%"
+                type="number"
               >
                 <template #prepend>
                   <AllCountryView @changeCountry="changeCountry" />
@@ -90,6 +91,7 @@
                 placeholder="请输入验证码"
                 class="input-with-select"
                 style="width: 100%"
+                type="number"
               >
               </el-input>
             </el-form-item>
@@ -155,7 +157,7 @@ const formRules = computed(() => {
         callback();
       }
     }, trigger: "blur" }],
-    code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
+    code: [{ required: true, min: 4, max: 6, message: "请输入4-6位验证码", trigger: "blur" }],
   };
 });
 const sendCode = () => {
@@ -167,6 +169,9 @@ const sendCode = () => {
   }
   if(!formModel.value.phone){
     return ElMessage.error("请先输入手机号码！！");
+  }
+  if(!/^1[3-9]\d{9}$/.test(formModel.value.phone)){
+    return ElMessage.error("请先输入正确的手机号码！！");
   }
   verifyRef.value && verifyRef.value.show();
 };
@@ -197,7 +202,7 @@ const submit = () => {
         word: {
           ...commonStore.pageOneParams.word,
           name:formModel.value.name,
-          phone:formModel.value.phone,
+          phone: `${countryCode.value.replace("+", "")}-${formModel.value.phone}`,
           newCustomered: res.data.newCustomered,
           newCustomeredId: res.data.id, 
         },
@@ -205,7 +210,10 @@ const submit = () => {
           ...res.data
         }
       })
-        router.push("/PoinSuccess");
+        router.push("/poinSuccess");
+      }else{
+        loading.close()
+        ElMessage.error(res.message)
       }
   
     } else {
@@ -254,7 +262,7 @@ onMounted(() => {
     !commonStore.pageOneParams?.params ||
     !commonStore.pageOneParams?.word
   ) {
-    router.push("/Index");
+    router.push("/index");
   }
   // getData();
 });
