@@ -40,6 +40,14 @@
                  :editable="false"
                  @change="changeDate"
                 placeholder="请选择日期"
+                :disabled-date="(date: any) => {
+                  const today = new Date();
+                  today.setHours(0,0,0,0);
+                  const maxDate = new Date();
+                  maxDate.setHours(0,0,0,0);
+                  maxDate.setDate(today.getDate() + maxReservableDays);
+                  return date < today || date > maxDate;
+                }"
               />
             </el-form-item>
             <el-form-item label="" prop="time">
@@ -109,7 +117,7 @@
             <div class="add-type">
               <el-row :gutter="24">
                 <el-col :span="12" class="back-btn-col">
-                  <el-button class="back-btn" @click="addType">添加类别</el-button>
+                  <el-button class="back-btn" @click="addType" v-if="index === 0">添加类别</el-button>
                 </el-col>
                 <el-col :span="12">
                   <div class="back-btn-col-del">
@@ -143,7 +151,8 @@ import {
   getShopListApi,
   getCategoryListApi,
   getProductListApi,
-  getWaiterListApi
+  getWaiterListApi,
+  getSettingDetailApi
 } from '@/apis/common'
 import { getRandomString } from '@/utils/index'
 import { CirclePlus, Delete } from '@element-plus/icons-vue'
@@ -198,6 +207,7 @@ const categoryList = ref<any>([])
 const productList = ref<any>([])
 const waiterList = ref<any>([])
 const router = useRouter()
+const maxReservableDays = ref(0)
 const formModel = ref({
   storeName: '',
   date: '',
@@ -292,7 +302,7 @@ const changeServer = (e: any, id: any, id2: any) => {
   const productIds: any = []
   formList.value.forEach((iv: any) => {
     if (iv.id === id) {
-      iv.model['customer'] = "";
+      iv.model['customer'] = ''
       Object.keys(iv.model).forEach((key: any) => {
         if (key.indexOf('server') !== -1) {
           const product = productList.value.find((it: any) => it.value === iv.model[key][0])
@@ -304,7 +314,7 @@ const changeServer = (e: any, id: any, id2: any) => {
       })
     }
   })
-  if(!formModel.value.date || !formModel.value.time){
+  if (!formModel.value.date || !formModel.value.time) {
     ElMessage.error('请填日期与时间!!!')
     return false
   }
@@ -349,6 +359,11 @@ const changeServer = (e: any, id: any, id2: any) => {
     console.log('formList.value===>', formList.value)
   })
 }
+const getSettingDetail = async () => {
+  const { data } = await getSettingDetailApi()
+  console.log('getSettingDetail===>', data)
+  maxReservableDays.value = data.maxReservableDays || 0
+}
 const submit = () => {
   formRef.value.validate((valid: any) => {
     if (valid) {
@@ -364,7 +379,7 @@ const submit = () => {
       }
       if (status) {
         ElMessage.error('请填写完整信息!!!')
-        return false;
+        return false
       }
       const arr: any = []
       cloneDeep(formList.value).map((item: any) => {
@@ -440,9 +455,9 @@ const submit = () => {
 const back = () => {
   console.log(formList.value)
 }
-const changeDate = (e:any) => {
-  console.log("changeDate=>",e)
-  formModel.value.date = e;
+const changeDate = (e: any) => {
+  console.log('changeDate=>', e)
+  formModel.value.date = e
   formList.value = cloneDeep(defaultFormList).map((item: any) => {
     item.itemList = item.itemList.map((iv: any) => {
       if (iv.value === 'type') {
@@ -463,9 +478,9 @@ const changeDate = (e:any) => {
     }
   })
 }
-const changeTime = (e:any) => {
-  console.log("changeTime=>",e)
-  formModel.value.time = e;
+const changeTime = (e: any) => {
+  console.log('changeTime=>', e)
+  formModel.value.time = e
   formList.value = cloneDeep(defaultFormList).map((item: any) => {
     item.itemList = item.itemList.map((iv: any) => {
       if (iv.value === 'type') {
@@ -518,7 +533,7 @@ const changeType = (e: any, id: any, type: any, item: any) => {
 const changeStore = (e: string) => {
   // formList.value = cloneDeep(defaultFormList);
   commonStore.setShopIdFn(e)
-  Promise.all([getCategoryList(), getProductList()]).then((res) => {
+  Promise.all([getCategoryList(), getProductList(), getSettingDetail()]).then((res) => {
     console.log(res)
     formList.value = cloneDeep(defaultFormList).map((item: any) => {
       item.itemList = item.itemList.map((iv: any) => {
@@ -612,6 +627,7 @@ onMounted(() => {
     getData()
     getCategoryList()
     getProductList()
+    getSettingDetail()
   }
 })
 </script>
@@ -623,6 +639,8 @@ onMounted(() => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
   .el-row {
     height: 100%;
   }
@@ -640,7 +658,7 @@ onMounted(() => {
     overflow-y: auto;
     width: 80%;
     margin: auto;
-    margin-top: 40px;
+    margin-top: 5vh;
     padding: 0 35px;
     background-color: #fff;
     border-radius: 5px;
