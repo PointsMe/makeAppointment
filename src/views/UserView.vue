@@ -142,8 +142,6 @@ const formRules = computed(() => {
         validator: (rule: any, value: any, callback: any) => {
           if (!value) {
             callback(new Error('请输入手机号'))
-          } else if (!/^1[3-9]\d{9}$/.test(value)) {
-            callback(new Error('请输入正确的手机号'))
           } else {
             callback()
           }
@@ -163,9 +161,6 @@ const sendCode = () => {
   }
   if (!formModel.value.phone) {
     return ElMessage.error('请先输入手机号码！！')
-  }
-  if (!/^1[3-9]\d{9}$/.test(formModel.value.phone)) {
-    return ElMessage.error('请先输入正确的手机号码！！')
   }
   verifyRef.value && verifyRef.value.show()
 }

@@ -121,151 +121,156 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import AllCountryView from "@/components/AllCountryView.vue";
-import { getRandomString } from "@/utils/index";
-import { Calendar, Timer } from "@element-plus/icons-vue";
-import { ElMessage, ElLoading } from "element-plus";
-import { useCommonStore } from "@/stores/modules/common";
-import { getVerificationCodeApi,createReservationApi } from "@/apis/common";
-import { cloneDeep,debounce } from "lodash-es";
+import { ref } from 'vue'
+import AllCountryView from '@/components/AllCountryView.vue'
+import { getRandomString } from '@/utils/index'
+import { Calendar, Timer } from '@element-plus/icons-vue'
+import { ElMessage, ElLoading } from 'element-plus'
+import { useCommonStore } from '@/stores/modules/common'
+import { getVerificationCodeApi, createReservationApi } from '@/apis/common'
+import { cloneDeep, debounce } from 'lodash-es'
 defineOptions({
   // eslint-disable-next-line vue/multi-word-component-names
-  name: "User",
-});
-const commonStore = useCommonStore();
-const formRef = ref<any>(null);
-const router = useRouter();
-const countryCode = ref();
-const verifyRef = ref();
-const num = ref(0);
-const timer = ref();
+  name: 'User'
+})
+const commonStore = useCommonStore()
+const formRef = ref<any>(null)
+const router = useRouter()
+const countryCode = ref()
+const verifyRef = ref()
+const num = ref(0)
+const timer = ref()
 const formModel = ref({
-  name: "",
-  phone: "",
-  code:''
-});
+  name: '',
+  phone: '',
+  code: ''
+})
 const formRules = computed(() => {
   return {
-    name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-    phone: [{ required: true, message: "请输入手机号", validator: (rule: any, value: any, callback: any) => {
-      if (!value) {
-        callback(new Error("请输入手机号"));
-      }else if(!/^1[3-9]\d{9}$/.test(value)){
-        callback(new Error("请输入正确的手机号"));
-      } else {
-        callback();
+    name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+    phone: [
+      {
+        required: true,
+        message: '请输入手机号',
+        validator: (rule: any, value: any, callback: any) => {
+          if (!value) {
+            callback(new Error('请输入手机号'))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'blur'
       }
-    }, trigger: "blur" }],
-    code: [{ required: true, min: 4, max: 6, message: "请输入4-6位验证码", trigger: "blur" }],
-  };
-});
+    ],
+    code: [{ required: true, min: 4, max: 6, message: '请输入4-6位验证码', trigger: 'blur' }]
+  }
+})
 const sendCode = () => {
   if (num.value > 0) {
-    return false;
+    return false
   }
   if (!countryCode.value) {
-    return ElMessage.error("请先选择手机区号！！");
+    return ElMessage.error('请先选择手机区号！！')
   }
-  if(!formModel.value.phone){
-    return ElMessage.error("请先输入手机号码！！");
+  if (!formModel.value.phone) {
+    return ElMessage.error('请先输入手机号码！！')
   }
-  if(!/^1[3-9]\d{9}$/.test(formModel.value.phone)){
-    return ElMessage.error("请先输入正确的手机号码！！");
-  }
-  verifyRef.value && verifyRef.value.show();
-};
+  verifyRef.value && verifyRef.value.show()
+}
 
 const submit = () => {
-  formRef.value.validate(async(valid: any) => {
+  formRef.value.validate(async (valid: any) => {
     if (valid) {
       const loading = ElLoading.service({
         lock: true,
-        text: "Loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       // Validate all dynamically generated forms
-      console.log("请求参数：",commonStore.pageOneParams.params)
+      console.log('请求参数：', commonStore.pageOneParams.params)
       const obj = {
-        "mobile": `${countryCode.value.replace("+", "")}-${formModel.value.phone}`,
-        "username": formModel.value.name,
-        "verificationCode": formModel.value.code,
+        mobile: `${countryCode.value.replace('+', '')}-${formModel.value.phone}`,
+        username: formModel.value.name,
+        verificationCode: formModel.value.code
       }
-      const lastParams = Object.assign(cloneDeep(commonStore.pageOneParams.params),obj)
-      const res:any = await createReservationApi({
-        ...lastParams
-      })
-      if(res && res.code === 20000){
-        loading.close()
-        commonStore.setPageOneParamsFn({
-        ...commonStore.pageOneParams,
-        word: {
-          ...commonStore.pageOneParams.word,
-          name:formModel.value.name,
-          phone: `${countryCode.value.replace("+", "")}-${formModel.value.phone}`,
-          newCustomered: res.data.newCustomered,
-          newCustomeredId: res.data.id, 
-        },
-        userInfo: {
-          ...res.data
+      const lastParams = Object.assign(cloneDeep(commonStore.pageOneParams.params), obj)
+      try {
+        const res: any = await createReservationApi({
+          ...lastParams
+        })
+        if (res && res.code === 20000) {
+          loading.close()
+          commonStore.setPageOneParamsFn({
+            ...commonStore.pageOneParams,
+            word: {
+              ...commonStore.pageOneParams.word,
+              name: formModel.value.name,
+              phone: `${countryCode.value.replace('+', '')}-${formModel.value.phone}`,
+              newCustomered: res.data.newCustomered,
+              newCustomeredId: res.data.id
+            },
+            userInfo: {
+              ...res.data
+            }
+          })
+          router.push('/poinSuccess')
+        } else {
+          loading.close()
+          ElMessage.error(res.message)
         }
-      })
-        router.push("/poinSuccess");
-      }else{
+      } catch (error) {
         loading.close()
-        ElMessage.error(res.message)
       }
-  
     } else {
-      console.log("error submit!!");
+      console.log('error submit!!')
     }
-  });
-};
-const submitFn = debounce(submit, 500);
+  })
+}
+const submitFn = debounce(submit, 500)
 const changeCountry = (e: string) => {
-  countryCode.value = e;
-};
+  countryCode.value = e
+}
 // 发送短信验证码
 const getVerificationCode = async (token: string) => {
-  console.log("aaaaa", countryCode.value);
-  if (num.value) return false;
+  console.log('aaaaa', countryCode.value)
+  if (num.value) return false
   const loading = ElLoading.service({
     lock: true,
-    text: "Loading",
-    background: "rgba(0, 0, 0, 0.7)",
-  });
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
   try {
     await getVerificationCodeApi({
-      mobile: `${countryCode.value.replace("+", "")}-${formModel.value.phone}`,
-      captcha: token,
-    });
-    loading.close();
-    num.value = 60;
+      mobile: `${countryCode.value.replace('+', '')}-${formModel.value.phone}`,
+      captcha: token
+    })
+    loading.close()
+    num.value = 60
     timer.value = setInterval(() => {
       if (num.value) {
-        num.value = num.value - 1;
+        num.value = num.value - 1
       } else {
-        clearInterval(timer.value);
+        clearInterval(timer.value)
       }
-    }, 1000);
+    }, 1000)
   } catch (e) {
-    loading.close();
+    loading.close()
   }
-};
+}
 const back = () => {
-  router.back();
-};
+  router.back()
+}
 onMounted(() => {
-  console.log(commonStore.pageOneParams);
+  console.log(commonStore.pageOneParams)
   if (
     !commonStore.pageOneParams ||
     !commonStore.pageOneParams?.params ||
     !commonStore.pageOneParams?.word
   ) {
-    router.push("/index");
+    router.push('/index')
   }
   // getData();
-});
+})
 </script>
 
 <style scoped lang="less">

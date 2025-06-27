@@ -145,7 +145,7 @@ import {
 } from '@/apis/common'
 import { getRandomString,isMobile } from '@/utils/index'
 import { CirclePlus, Delete } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useCommonStore } from '@/stores/modules/common'
 import cloneDeep from 'lodash-es/cloneDeep'
 import moment from 'moment'
@@ -197,6 +197,7 @@ const productList = ref<any>([])
 const waiterList = ref<any>([])
 const router = useRouter()
 const maxReservableDays = ref(0)
+const isAbleSubmit = ref(true)
 const formModel = ref({
   storeName: '',
   date: '',
@@ -352,8 +353,26 @@ const getSettingDetail = async () => {
   const { data } = await getSettingDetailApi()
   console.log('getSettingDetail===>', data)
   maxReservableDays.value = data.maxReservableDays || 0
+  isAbleSubmit.value = data.enabled
+  if (!isAbleSubmit.value) {
+    openAlert('当前门店不可预约，请选择其他门店')
+  }
+}
+
+const openAlert = (message: string) => {
+  ElMessageBox.alert(message, '提示', {
+    showClose: true,
+    confirmButtonText: 'OK',
+    showCancelButton: false,
+    showConfirmButton: false,
+    callback: (action: any) => {}
+  })
 }
 const submit = () => {
+  if (!isAbleSubmit.value) {
+    openAlert('当前门店不可预约，请选择其他门店')
+    return false
+  }
   formRef.value.validate((valid: any) => {
     if (valid) {
       // Validate all dynamically generated forms
