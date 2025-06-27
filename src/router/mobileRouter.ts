@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/index',
+        path: '/',
         name: 'Index',
         component: () => import('../views/mobile/IndexView.vue'),
         meta: {

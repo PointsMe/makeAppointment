@@ -104,7 +104,7 @@ const submit = () => {
 };
 
 const back = () => {
-  router.push("/Index");
+  router.push("/");
 };
 onMounted(() => {
   // console.log(commonStore.pageOneParams);

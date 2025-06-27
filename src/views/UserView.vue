@@ -254,7 +254,7 @@ onMounted(() => {
     !commonStore.pageOneParams?.params ||
     !commonStore.pageOneParams?.word
   ) {
-    router.push('/index')
+    router.push('/')
   }
   // getData();
 })

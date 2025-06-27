@@ -141,9 +141,10 @@ import {
   getCategoryListApi,
   getProductListApi,
   getWaiterListApi,
-  getSettingDetailApi
+  getSettingDetailApi,
+  getCodeDetailApi
 } from '@/apis/common'
-import { getRandomString,isMobile } from '@/utils/index'
+import { getRandomString } from '@/utils/index'
 import { CirclePlus, Delete } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useCommonStore } from '@/stores/modules/common'
@@ -620,21 +621,37 @@ const getData = async () => {
   const { data } = await getShopListApi()
   storeList.value = data
 }
+const getCodeDetail = async (code: string) => {
+  const { data } = await getCodeDetailApi({
+    code: code,
+  })
+  return data
+}
 onActivated(() => {
-  console.log('onActivated===>')
+  // 获取从哪个路由进来的信息
+  const fromRoute = router.options.history.state.forward;
+  console.log('用户是从哪个路由进来的:', fromRoute);
+  if (fromRoute === '/register' || fromRoute === '/Register') {
+    console.log('用户是从User路由进来的')
+    formModel.value.date = ''
+    formModel.value.time = ''
+    formList.value = cloneDeep(defaultFormList)
+  }
 })
 onMounted(() => {
-  const merchantId = router.currentRoute.value?.query?.merchantId as string
-  const shopId = router.currentRoute.value?.query?.shopId as string
-  console.log('onMounted====>', router.currentRoute.value?.query)
-  if (merchantId && shopId) {
-    commonStore.setMerchantIdFn(merchantId)
-    commonStore.setShopIdFn(shopId)
-    formModel.value.storeName = shopId
-    getData()
-    getCategoryList()
-    getProductList()
-    getSettingDetail()
+  const code = router.currentRoute.value?.query?.code as string
+  if (code) {
+    getCodeDetail(code).then((res: any) => {
+      if (res?.merchantId && res?.id) {
+        commonStore.setMerchantIdFn(res.merchantId);
+        commonStore.setShopIdFn(res.id)
+        formModel.value.storeName = res.id
+        getData()
+        getCategoryList()
+        getProductList()
+        getSettingDetail()
+      }
+    })
   }
 })
 </script>

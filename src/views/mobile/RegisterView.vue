@@ -111,7 +111,7 @@ const submit = () => {
       });
       if (res && res.code === 20000) {
         ElMessage.success("用户注册成功！！！");
-        router.push("/index");
+        router.push("/");
       }
     }else{
       console.log("submit error")

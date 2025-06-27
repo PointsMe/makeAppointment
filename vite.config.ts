@@ -23,8 +23,8 @@ export default defineConfig({
     // 反向代理
     proxy: {
       "/api": {
-        // target: "http://192.168.1.187:13902/api",
-        target: "http://fsconsole.frp.saonian.org/api",
+        target: "http://192.168.1.187:13902/api",
+        // target: "http://fsconsole.frp.saonian.org/api",
         // 是否为 WebSocket
         ws: false,
         // 是否允许跨域

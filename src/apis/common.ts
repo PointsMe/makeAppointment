@@ -98,3 +98,10 @@ export function getSettingDetailApi() {
     method: "post",
   })
 }
+export function getCodeDetailApi(data:any) {
+  return request<any>({
+    url: "/shop/code/find",
+    method: "post",
+    data:data
+  })
+}
