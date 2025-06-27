@@ -71,7 +71,7 @@ export default defineConfig({
   },
  // 打包配置
  build: {
-  outDir:'appointment',
+  outDir:'r',
   emptyOutDir: true,
   // 清除console和debugger
   terserOptions: {
