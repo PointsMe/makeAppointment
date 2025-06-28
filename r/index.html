@@ -68,8 +68,16 @@
           meta.name = 'viewport'
           meta.content = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1'
           document.head.appendChild(meta)
+          function handleResize() {
+            // console.log('屏幕大小已变化！',window.innerWidth,window.screen.width);
+            // 在这里添加你的代码来处理屏幕大小变化
+            const num = (window.screen.width / 375) * 18 * 2
+            html.style.fontSize = `${num}px`
+          }
+          handleResize()
+          window.addEventListener('resize', handleResize) // 250毫秒内最多执行一次handleResize函数
         } else {
-          console.log('html===>', html)
+          console.log('html===>', html.style.fontSize)
           function handleResize() {
             // console.log('屏幕大小已变化！',window.innerWidth,window.screen.width);
             // 在这里添加你的代码来处理屏幕大小变化
