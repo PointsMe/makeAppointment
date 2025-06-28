@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="./Vector.png" />
+    <!-- <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    /> -->
+
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" /> -->
+    <title>美甲预约</title>
+    <script>
+      function throttle(func, limit) {
+        let lastFunc
+        let lastRan
+        return function () {
+          const context = this
+          const args = arguments
+          if (!lastRan) {
+            func.apply(context, args)
+            lastRan = Date.now()
+          } else {
+            clearTimeout(lastFunc)
+            lastFunc = setTimeout(
+              function () {
+                if (Date.now() - lastRan >= limit) {
+                  func.apply(context, args)
+                  lastRan = Date.now()
+                }
+              },
+              limit - (Date.now() - lastRan)
+            )
+          }
+        }
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        const html = document.querySelector('html')
+        const isMobileDevice = () => {
+          // 获取用户代理字符串
+          const userAgent = navigator.userAgent.toLowerCase()
+
+          // 移动设备关键词
+          const mobileKeywords = [
+            'android',
+            'iphone',
+            'ipad',
+            'ipod',
+            'blackberry',
+            'windows phone',
+            'mobile',
+            'tablet'
+          ]
+
+          // 检查是否包含移动设备关键词
+          const isMobile = mobileKeywords.some((keyword) => userAgent.includes(keyword))
+
+          // 额外的屏幕尺寸检查（可选）
+          const screenWidth = window.screen.width
+          const screenHeight = window.screen.height
+          const isSmallScreen = screenWidth <= 768 || screenHeight <= 768
+
+          // 如果用户代理检测到移动设备或者屏幕尺寸较小，则认为是移动端
+          return isMobile || isSmallScreen
+        }
+        if (isMobileDevice()) {
+          var meta = document.createElement('meta')
+          meta.name = 'viewport'
+          meta.content = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1'
+          document.head.appendChild(meta)
+        } else {
+          console.log('html===>', html)
+          function handleResize() {
+            // console.log('屏幕大小已变化！',window.innerWidth,window.screen.width);
+            // 在这里添加你的代码来处理屏幕大小变化
+            const num = (window.screen.width / 1920) * 18 * 2
+            html.style.fontSize = `${num}px`
+          }
+          handleResize()
+          window.addEventListener('resize', handleResize) // 250毫秒内最多执行一次handleResize函数
+        }
+      })
+    </script>
+    <script type="module" crossorigin src="./assets/js/index-48aa1907.js"></script>
+    <link rel="stylesheet" href="./assets/css/index-bd75aafd.css">
+  </head>
+
+  <body>
+    <div id="app"></div>
+    
+  </body>
+</html>

@@ -448,7 +448,7 @@ const submit = () => {
             return {
               categoryList: categoryList.value.find((iv: any) => iv.id === item.model.type)?.name,
               productList: allServerNames.join(),
-              customerName: waiterList.value.find((it: any) => it.id === item.model.customer)?.name
+              customerName: item.itemList.find((it: any) => it.value === 'customer')?.optionsData.find((it: any) => it.id === item.model.customer)?.name
             }
           })
         }
@@ -589,7 +589,7 @@ const getProductList = async () => {
   const arr = data.map((item: any) => {
     return {
       value: item.id,
-      label: `${item.name}(€${item.price})`,
+      label: item.brandList && item.brandList.length > 0 ? `${item.name}` : `${item.name}(€${item.price})`,
       categoryId: item?.category?.id,
       duration: item?.duration,
       children:
@@ -597,7 +597,7 @@ const getProductList = async () => {
           ? item.brandList.map((iv: any) => {
               return {
                 value: iv.id,
-                label: `${iv.name}(€${iv.price})`
+                label: `${iv.name}(€${Number(item.price) + Number(iv.price)})`
               }
             })
           : null
@@ -629,10 +629,10 @@ const getCodeDetail = async (code: string) => {
 }
 onActivated(() => {
   // 获取从哪个路由进来的信息
-  const fromRoute = router.options.history.state.forward;
-  console.log('用户是从哪个路由进来的:', fromRoute);
-  if (fromRoute === '/register' || fromRoute === '/Register') {
-    console.log('用户是从User路由进来的')
+  const fromRoute = router.options.history.state.back;
+  console.log('用户是从哪个路由进来的:', router);
+  if (fromRoute === '/Register' || fromRoute === '/register') {
+    console.log('用户是从Register路由进来的')
     formModel.value.date = ''
     formModel.value.time = ''
     formList.value = cloneDeep(defaultFormList)

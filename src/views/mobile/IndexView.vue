@@ -422,6 +422,7 @@ const submit = () => {
           }
         })
       })
+      console.log('arr===>', arr,formList.value)
       const params = {
         params: {
           predictArrivalAt: new Date(`${formModel.value.date} ${formModel.value.time}`).getTime(),
@@ -459,7 +460,7 @@ const submit = () => {
             return {
               categoryList: categoryList.value.find((iv: any) => iv.id === item.model.type)?.name,
               productList: allServerNames.join(),
-              customerName: waiterList.value.find((it: any) => it.id === item.model.customer)?.name
+              customerName: item.itemList.find((it: any) => it.value === 'customer')?.optionsData.find((it: any) => it.id === item.model.customer)?.name
             }
           })
         }
